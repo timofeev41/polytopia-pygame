@@ -1,7 +1,8 @@
 import pygame
 
-from logic import GridController, MoveController, Player
-
+from controllers.grid import GridController
+from controllers.move import MoveController
+from schemas.player import Player
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
