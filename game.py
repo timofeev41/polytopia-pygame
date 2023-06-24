@@ -1,6 +1,6 @@
 import pygame
 
-from controllers.grid import GridController, create_game
+from controllers.grid import create_game
 from controllers.move import MoveController
 from schemas.player import Player
 
@@ -32,11 +32,7 @@ font = pygame.font.SysFont("Arial", 12)
 move_font = pygame.font.SysFont("Arial", 24, bold=True)
 
 while not escaped:
-    player_id_to_move = MoveController.get_turn_player_id()
-    move_queue_text = move_font.render(f'Turn to move: Player {player_id_to_move}', False, WHITE)
-    screen.blit(
-        move_queue_text, (WINDOW_SIZE[0] // 4, WINDOW_SIZE[1] - 30)
-    )
+    screen.fill(BLACK)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             escaped = True
@@ -46,6 +42,14 @@ while not escaped:
             row = pos[1] // (HEIGHT + MARGIN)
 
             MoveController.move(row, column)
+
+    player_id_to_move = MoveController.get_turn_player_id()
+    move_queue_text = move_font.render(f'Turn to move: Player {player_id_to_move}', False, WHITE)
+    screen.blit(
+        move_queue_text, (WINDOW_SIZE[0] // 4, WINDOW_SIZE[1] - 30)
+    )
+    
+
 
     for row in range(10):
         for column in range(10):
