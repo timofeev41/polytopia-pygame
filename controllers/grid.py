@@ -42,3 +42,8 @@ class _GridController:
 
 
 GridController = _GridController()
+
+
+def create_game(amount_players: int = 2):
+    return GridController.get_grid()
+

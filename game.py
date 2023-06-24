@@ -1,6 +1,6 @@
 import pygame
 
-from controllers.grid import GridController
+from controllers.grid import GridController, create_game
 from controllers.move import MoveController
 from schemas.player import Player
 
@@ -13,24 +13,30 @@ BLUE = (0, 0, 255)
 WIDTH = 50
 HEIGHT = 50
 MARGIN = 5
+Y_SHIFT = 25
 
-
-grid = GridController.get_grid()
+grid = create_game()
 
 pygame.init()
 
-WINDOW_SIZE = [555, 555]
+WINDOW_SIZE = [555, 580]
 screen = pygame.display.set_mode(WINDOW_SIZE)
 screen.fill(BLACK)
 
 pygame.display.set_caption("PolytopiaPy")
 
 escaped = False
-selected_pos = None
 
 clock = pygame.time.Clock()
+font = pygame.font.SysFont("Arial", 12)
+move_font = pygame.font.SysFont("Arial", 24, bold=True)
 
 while not escaped:
+    player_id_to_move = MoveController.get_turn_player_id()
+    move_queue_text = move_font.render(f'Turn to move: Player {player_id_to_move}', False, WHITE)
+    screen.blit(
+        move_queue_text, (WINDOW_SIZE[0] // 4, WINDOW_SIZE[1] - 30)
+    )
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             escaped = True
@@ -58,7 +64,6 @@ while not escaped:
             )
             if isinstance(grid[row][column], Player):
                 # XXX: draw player info
-                font = pygame.font.SysFont("Arial", 12)
                 img = font.render(str(grid[row][column]), True, BLACK)
                 screen.blit(
                     img, ((MARGIN + WIDTH) * column + 12, (MARGIN + HEIGHT) * row + 25)
