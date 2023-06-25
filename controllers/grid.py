@@ -1,3 +1,4 @@
+from config import GRID_SIZE
 from controllers.player import PlayerController
 from schemas.player import Player
 
@@ -19,9 +20,9 @@ class _GridController:
     def _init_grid(self):
         """Create simple 10x10 grid."""
         grid = []
-        for row in range(10):
+        for row in range(GRID_SIZE):
             grid.append([])
-            for _ in range(10):
+            for _ in range(GRID_SIZE):
                 grid[row].append(None)
         return grid
     

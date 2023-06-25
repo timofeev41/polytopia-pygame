@@ -36,8 +36,11 @@ class _MoveController:
 
     def move(self, row, column):
         current_cell = GridController.get_by_xy(row, column)
+        previous_cell: Player | None = None
+        if self.selected_pos:
+            previous_cell = GridController.get_by_xy(*self.selected_pos)
         if not self.selected_pos:
-            if isinstance(current_cell, Player) and current_cell.id == 1:
+            if isinstance(current_cell, Player) and current_cell.id == self._turn_player_id:
                 self.selected_pos = (row, column)
                 print(f"Player {self._turn_player_id}: Selected cell {self.selected_pos} - {(row, column)}")
         else:
@@ -51,7 +54,7 @@ class _MoveController:
                 GridController.swap((row, column), self.selected_pos)
                 self.selected_pos = None
                 self._turn_player_id = PlayerController.get_next_player(self._turn_player_id).id
-            elif isinstance(current_cell, Player) and current_cell.id != 1:
+            elif isinstance(current_cell, Player) and previous_cell and previous_cell.id != current_cell.id:
                 if self.is_fight(initial_cell, current_cell):
                     print(f'Fight: {initial_cell} vs {current_cell}')
                     GridController.modify_player(row, column, initial_cell.power)
