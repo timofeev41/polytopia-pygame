@@ -1,5 +1,5 @@
 import pygame
-from config import GRID_SIZE
+from config import GRID
 
 from controllers.grid import create_game
 from controllers.move import MoveController
@@ -50,8 +50,8 @@ while not escaped:
         move_queue_text, (WINDOW_SIZE[0] // 4, WINDOW_SIZE[1] - 30)
     )
 
-    for row in range(GRID_SIZE):
-        for column in range(GRID_SIZE):
+    for row in range(GRID.GRID_SIZE):
+        for column in range(GRID.GRID_SIZE):
             color = WHITE
             if isinstance(grid[row][column], Player):
                 color = RED

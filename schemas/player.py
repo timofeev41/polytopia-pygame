@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
+from config import PLAYER
+
 
 @dataclass
 class Player:
     id: int
-    hp: int = 10
+    hp: int = PLAYER.INITIAL_HP
     power: int = 2
 
     def __repr__(self) -> str:

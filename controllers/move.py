@@ -1,6 +1,7 @@
 import math
 from controllers.grid import GridController
 from controllers.player import PlayerController
+from logger import logger
 
 from schemas.player import Player
 
@@ -27,12 +28,17 @@ class _MoveController:
         return False
     
     def fight(self, start, end):
-        player1 = GridController.get_by_xy(start[0], start[1])
+        player1 = GridController.get_by_xy(*start)
         if not isinstance(player1, Player):
-            print(f"Cell {start, end} not contains fighter")
+            logger.info(f"Cell {start} not contains fighter")
             return
         
-        GridController.modify_player(end[0], end[1], player1.power)
+        # if killed don't pass move
+        if not GridController.modify_player(*end, damage=player1.power):
+            player_id = GridController.get_by_xy(*end).id
+            logger.info(f'Player {player_id} killed!')
+            GridController.flush_cell(*end)
+            PlayerController.verify_elimination(player_id)
 
     def move(self, row, column):
         current_cell = GridController.get_by_xy(row, column)
@@ -42,24 +48,23 @@ class _MoveController:
         if not self.selected_pos:
             if isinstance(current_cell, Player) and current_cell.id == self._turn_player_id:
                 self.selected_pos = (row, column)
-                print(f"Player {self._turn_player_id}: Selected cell {self.selected_pos} - {(row, column)}")
+                logger.info(f"Player {self._turn_player_id}: Selected cell {self.selected_pos} - {(row, column)}")
         else:
             initial_cell: Player = GridController.get_by_xy(*self.selected_pos)
             if not isinstance(current_cell, Player):
                 if not self.is_valid_move(self.selected_pos, (row, column)):
-                    print("Invalid move")
+                    logger.info("Invalid move")
                     return
 
-                print(f"Player {self._turn_player_id}: Move cell {self.selected_pos} to {(row, column)}")
+                logger.info(f"Player {self._turn_player_id}: Move cell {self.selected_pos} to {(row, column)}")
                 GridController.swap((row, column), self.selected_pos)
                 self.selected_pos = None
                 self._turn_player_id = PlayerController.get_next_player(self._turn_player_id).id
             elif isinstance(current_cell, Player) and previous_cell and previous_cell.id != current_cell.id:
                 if self.is_fight(initial_cell, current_cell):
-                    print(f'Fight: {initial_cell} vs {current_cell}')
-                    GridController.modify_player(row, column, initial_cell.power)
-                    return
-                print(f"Player {self._turn_player_id}: Deseleted cell: {self.selected_pos}")
+                    logger.info(f'Fight: {initial_cell} vs {current_cell}')
+                    MoveController.fight(self.selected_pos, (row, column))
+                logger.info(f"Player {self._turn_player_id}: Deseleted cell: {self.selected_pos}")
                 self.selected_pos = None
 
 

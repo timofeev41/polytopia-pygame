@@ -1,4 +1,4 @@
-from config import GRID_SIZE
+from config import GRID
 from controllers.player import PlayerController
 from schemas.player import Player
 
@@ -20,9 +20,9 @@ class _GridController:
     def _init_grid(self):
         """Create simple 10x10 grid."""
         grid = []
-        for row in range(GRID_SIZE):
+        for row in range(GRID.GRID_SIZE):
             grid.append([])
-            for _ in range(GRID_SIZE):
+            for _ in range(GRID.GRID_SIZE):
                 grid[row].append(None)
         return grid
     
@@ -33,13 +33,30 @@ class _GridController:
         self.grid[start[0]][start[1]] = self.grid[end[0]][end[1]] 
         self.grid[end[0]][end[1]] = None
 
-    def modify_player(self, x: int, y: int, damage: int):
+    def modify_player(self, x: int, y: int, damage: int) -> bool:
+        """returns true if modified, false if not (may be killed)"""
         cell = self.grid[x][y]
         if not isinstance(cell, Player):
-            print('Attacking empty cell instead of player!')
-            return
-    
+            raise ValueError('Attacking empty cell instead of player!')
+            
+        if cell.hp - damage <= 0:
+            return False
         cell.hp -= damage
+        return True
+    
+    def flush_cell(self, x: int, y: int):
+        self.grid[x][y] = None
+
+    def check_alive_units(self, id: int) -> bool:
+        """if all units are dead return false else true"""
+        for row in self.grid:
+            for val in row:
+                if isinstance(val, Player):
+                    if val.id == id:
+                        return True
+        return False
+
+        
 
 
 GridController = _GridController()
